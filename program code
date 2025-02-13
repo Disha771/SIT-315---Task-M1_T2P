@@ -1,0 +1,37 @@
+volatile bool motionDetected = false;    // Flag to track motion detection
+
+void setup() {
+    pinMode(2, INPUT);
+    pinMode(LED_BUILTIN, OUTPUT);
+    Serial.begin(9600);
+
+    attachInterrupt(digitalPinToInterrupt(2), motionISR, RISING);     // Set up interrupt on motion detection
+}
+
+void loop() {
+    static bool ledState = false;      // Keep track of LED state
+
+    if (motionDetected) 
+    {
+        if (!ledState) 
+        { 
+            digitalWrite(LED_BUILTIN, HIGH);
+            Serial.println("Motion detected: LED ON");
+            ledState = true;
+        }
+        motionDetected = false; 
+    } 
+     else {
+        if (ledState) 
+        { 
+            digitalWrite(LED_BUILTIN, LOW);
+            Serial.println("No motion detected: LED OFF");
+            ledState = false;
+        }
+    }
+    delay(500);
+}
+
+void motionISR() {
+    motionDetected = true;
+}
